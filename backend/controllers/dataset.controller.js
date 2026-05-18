@@ -33,6 +33,26 @@ const createDataset = async (req, res, next) => {
   }
 };
 
+// @desc    Get all dataset records
+// @route   GET /datasets
+const getAllDatasets = async (req, res, next) => {
+  try {
+    // 1. Call the service layer to fetch all datasets
+    const datasets = await datasetService.getAllDatasets();
+
+    // 2. Return the response with count and data
+    res.status(200).json({
+      success: true,
+      count: datasets.length,
+      data: datasets,
+    });
+  } catch (error) {
+    // Pass the error to the global error middleware
+    next(error);
+  }
+};
+
 module.exports = {
   createDataset,
+  getAllDatasets,
 };

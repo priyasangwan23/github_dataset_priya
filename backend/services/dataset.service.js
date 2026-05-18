@@ -19,6 +19,14 @@ const createDataset = async (datasetData) => {
   return await newDataset.save();
 };
 
+// Service function to get all datasets
+const getAllDatasets = async () => {
+  // Fetch all datasets, excluding soft-deleted ones (if isDeleted field exists)
+  // Sort by newest first using createdAt timestamp
+  return await Dataset.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 });
+};
+
 module.exports = {
   createDataset,
+  getAllDatasets,
 };
