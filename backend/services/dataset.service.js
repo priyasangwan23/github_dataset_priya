@@ -77,9 +77,26 @@ const updateDatasetById = async (id, updateData) => {
   return updatedDataset;
 };
 
+// Service function to delete a dataset by its custom 'id' string field
+const deleteDatasetById = async (id) => {
+  // Atomically find and delete in a single query using the custom string id
+  const deletedDataset = await Dataset.findOneAndDelete({ id });
+
+  // If no document matched the filter, the dataset does not exist
+  if (!deletedDataset) {
+    const error = new Error("Dataset not found");
+    error.statusCode = 404; // 404 Not Found
+    throw error;
+  }
+
+  // Return the deleted document (useful for logging / confirmation)
+  return deletedDataset;
+};
+
 module.exports = {
   createDataset,
   getAllDatasets,
   getDatasetById,
   updateDatasetById,
+  deleteDatasetById,
 };
