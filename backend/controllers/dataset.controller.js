@@ -73,8 +73,39 @@ const getDatasetById = async (req, res, next) => {
   }
 };
 
+// @desc    Update a dataset by its custom 'id' string field
+// @route   PATCH /datasets/:id
+const updateDatasetById = async (req, res, next) => {
+  try {
+    // 1. Extract the custom string id from route params
+    const { id } = req.params;
+
+    // 2. Extract update fields from request body
+    const updateData = req.body;
+
+    // 3. Call the service layer (handles empty body, not-found, & validation)
+    const updatedDataset = await datasetService.updateDatasetById(id, updateData);
+
+    // 4. Return the updated document
+    res.status(200).json({
+      success: true,
+      message: "Dataset updated",
+      data: updatedDataset,
+    });
+  } catch (error) {
+    // Tag Mongoose validation errors (from runValidators) with 400
+    if (error.name === "ValidationError") {
+      error.statusCode = 400;
+    }
+
+    // Pass all errors to the global error middleware
+    next(error);
+  }
+};
+
 module.exports = {
   createDataset,
   getAllDatasets,
   getDatasetById,
+  updateDatasetById,
 };
