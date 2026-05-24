@@ -49,8 +49,37 @@ const getDatasetById = async (id) => {
   return dataset;
 };
 
+// Service function to update a dataset by its custom 'id' string field
+const updateDatasetById = async (id, updateData) => {
+  // Reject empty update bodies — nothing to update
+  if (!updateData || Object.keys(updateData).length === 0) {
+    const error = new Error("No update fields provided");
+    error.statusCode = 400; // 400 Bad Request
+    throw error;
+  }
+
+  // Find the document by the custom 'id' string field and apply partial update.
+  // runValidators ensures schema validations (type, required) are applied.
+  // new: true returns the document after the update is applied.
+  const updatedDataset = await Dataset.findOneAndUpdate(
+    { id },                   // filter: match by custom string id
+    { $set: updateData },     // update: set only the provided fields
+    { new: true, runValidators: true }
+  );
+
+  // If no document matched the filter, the dataset does not exist
+  if (!updatedDataset) {
+    const error = new Error("Dataset not found");
+    error.statusCode = 404; // 404 Not Found
+    throw error;
+  }
+
+  return updatedDataset;
+};
+
 module.exports = {
   createDataset,
   getAllDatasets,
   getDatasetById,
+  updateDatasetById,
 };
