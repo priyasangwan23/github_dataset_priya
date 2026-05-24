@@ -10,8 +10,11 @@ router.get("/", datasetController.getAllDatasets);
 // GET   /datasets/:id  → Fetch a single dataset by MongoDB ObjectId
 router.get("/:id", datasetController.getDatasetById);
 
-// PATCH /datasets/:id  → Partially update a dataset by custom string id
+// PATCH  /datasets/:id  → Partially update a dataset by custom string id
 router.patch("/:id", datasetController.updateDatasetById);
+
+// DELETE /datasets/:id  → Delete a dataset by custom string id
+router.delete("/:id", datasetController.deleteDatasetById);
 
 // POST /datasets       → Create a new dataset
 router.post("/", datasetController.createDataset);

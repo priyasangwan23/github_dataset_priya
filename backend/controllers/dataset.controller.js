@@ -103,9 +103,31 @@ const updateDatasetById = async (req, res, next) => {
   }
 };
 
+// @desc    Delete a dataset by its custom 'id' string field
+// @route   DELETE /datasets/:id
+const deleteDatasetById = async (req, res, next) => {
+  try {
+    // 1. Extract the custom string id from route params
+    const { id } = req.params;
+
+    // 2. Call the service layer (handles not-found error internally)
+    await datasetService.deleteDatasetById(id);
+
+    // 3. Return success — no data body since the document no longer exists
+    res.status(200).json({
+      success: true,
+      message: "Dataset deleted",
+    });
+  } catch (error) {
+    // Pass the error (404 / 500) to the global error middleware
+    next(error);
+  }
+};
+
 module.exports = {
   createDataset,
   getAllDatasets,
   getDatasetById,
   updateDatasetById,
+  deleteDatasetById,
 };
