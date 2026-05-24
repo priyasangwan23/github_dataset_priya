@@ -52,7 +52,29 @@ const getAllDatasets = async (req, res, next) => {
   }
 };
 
+// @desc    Get a single dataset by its MongoDB ObjectId
+// @route   GET /datasets/:id
+const getDatasetById = async (req, res, next) => {
+  try {
+    // 1. Extract the id from the route parameters
+    const { id } = req.params;
+
+    // 2. Call the service layer (handles ObjectId validation & not-found)
+    const dataset = await datasetService.getDatasetById(id);
+
+    // 3. Return the found dataset
+    res.status(200).json({
+      success: true,
+      data: dataset,
+    });
+  } catch (error) {
+    // Pass the error (400 / 404 / 500) to the global error middleware
+    next(error);
+  }
+};
+
 module.exports = {
   createDataset,
   getAllDatasets,
+  getDatasetById,
 };
