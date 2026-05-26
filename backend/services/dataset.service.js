@@ -20,11 +20,33 @@ const createDataset = async (datasetData) => {
   return await newDataset.save();
 };
 
-// Service function to get all datasets
-const getAllDatasets = async () => {
-  // Fetch all datasets, excluding soft-deleted ones (if isDeleted field exists)
-  // Sort by newest first using createdAt timestamp
-  return await Dataset.find({ isDeleted: { $ne: true } }).sort({ createdAt: -1 });
+// Service function to get all datasets with optional filtering
+const getAllDatasets = async (filters = {}) => {
+  // Build a dynamic MongoDB query object from the provided filters
+  const query = {};
+
+  // Filter by metadata.type
+  if (filters.type) {
+    query["metadata.type"] = filters.type;
+  }
+
+  // Filter by metadata.repo_name
+  if (filters.repo_name) {
+    query["metadata.repo_name"] = filters.repo_name;
+  }
+
+  // Filter by metadata.source_type
+  if (filters.source_type) {
+    query["metadata.source_type"] = filters.source_type;
+  }
+
+  // Filter by metadata.code_element
+  if (filters.code_element) {
+    query["metadata.code_element"] = filters.code_element;
+  }
+
+  // Always exclude soft-deleted documents and sort newest first
+  return await Dataset.find({ ...query, isDeleted: { $ne: true } }).sort({ createdAt: -1 });
 };
 
 // Service function to get a single dataset by its MongoDB ObjectId
