@@ -33,14 +33,20 @@ const createDataset = async (req, res, next) => {
   }
 };
 
-// @desc    Get all dataset records
-// @route   GET /datasets
+// @desc    Get all dataset records (supports optional query-param filtering)
+// @route   GET /datasets?type=&repo_name=&source_type=&code_element=
 const getAllDatasets = async (req, res, next) => {
   try {
-    // 1. Call the service layer to fetch all datasets
-    const datasets = await datasetService.getAllDatasets();
+    // 1. Extract supported filter params from the query string
+    //    Only pick the four allowed fields — ignore everything else
+    const { type, repo_name, source_type, code_element } = req.query;
+    const filters = { type, repo_name, source_type, code_element };
 
-    // 2. Return the response with count and data
+    // 2. Call the service layer with the filters object
+    const datasets = await datasetService.getAllDatasets(filters);
+
+    // 3. Return the response with count and data
+    //    count: 0 + data: [] is a valid response — not an error
     res.status(200).json({
       success: true,
       count: datasets.length,
