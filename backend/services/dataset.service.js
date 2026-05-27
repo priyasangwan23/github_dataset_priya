@@ -20,31 +20,59 @@ const createDataset = async (datasetData) => {
   return await newDataset.save();
 };
 
-// Service function to get all datasets with optional filtering, search, and pagination
+// Service function to get all datasets with optional filtering, search, pagination, and sorting
 const getAllDatasets = async (options = {}) => {
-  const { type, repo_name, source_type, code_element, search, page, limit } = options;
+  const {
+    type,
+    repo_name,
+    source_type,
+    code_element,
+    search,
+    page,
+    limit,
+    sort,
+    order,
+    language,
+    framework,
+    category,
+    task
+  } = options;
 
   // Build a dynamic MongoDB query object
   const query = { isDeleted: { $ne: true } };
 
-  // Filter by metadata.type
-  if (type) {
-    query["metadata.type"] = type;
+  // Support both flattened and nested formats for metadata filters
+  const typeVal = type || options["metadata.type"];
+  const repoNameVal = repo_name || options["metadata.repo_name"];
+  const sourceTypeVal = source_type || options["metadata.source_type"];
+  const codeElementVal = code_element || options["metadata.code_element"];
+
+  // Filter by metadata
+  if (typeVal) {
+    query["metadata.type"] = typeVal;
+  }
+  if (repoNameVal) {
+    query["metadata.repo_name"] = repoNameVal;
+  }
+  if (sourceTypeVal) {
+    query["metadata.source_type"] = sourceTypeVal;
+  }
+  if (codeElementVal) {
+    query["metadata.code_element"] = codeElementVal;
   }
 
-  // Filter by metadata.repo_name
-  if (repo_name) {
-    query["metadata.repo_name"] = repo_name;
+  // Advanced Filters
+  if (language) {
+    query.language = language;
   }
-
-  // Filter by metadata.source_type
-  if (source_type) {
-    query["metadata.source_type"] = source_type;
+  if (framework) {
+    query.framework = framework;
   }
-
-  // Filter by metadata.code_element
-  if (code_element) {
-    query["metadata.code_element"] = code_element;
+  if (category) {
+    query.category = category;
+  }
+  if (task) {
+    query.task = task;
   }
 
   // Search logic
@@ -81,13 +109,47 @@ const getAllDatasets = async (options = {}) => {
 
   const skip = (parsedPage - 1) * parsedLimit;
 
+  // Build and validate sorting object
+  const sortObj = {};
+  if (sort) {
+    const allowedSortFields = [
+      "id",
+      "instruction",
+      "input",
+      "output",
+      "createdAt",
+      "updatedAt",
+      "language",
+      "framework",
+      "category",
+      "task",
+      "metadata.type",
+      "metadata.code_element",
+      "metadata.repo_name",
+      "metadata.file_path",
+      "metadata.source_type"
+    ];
+
+    if (!allowedSortFields.includes(sort)) {
+      const error = new Error(`Invalid sort field: '${sort}'`);
+      error.statusCode = 400; // 400 Bad Request
+      throw error;
+    }
+
+    const sortOrder = order === "desc" ? -1 : 1;
+    sortObj[sort] = sortOrder;
+  } else {
+    // Default sort is createdAt desc (newest first)
+    sortObj.createdAt = -1;
+  }
+
   // Get total count matching the query for totalPages calculation
   const totalCount = await Dataset.countDocuments(query);
   const totalPages = Math.ceil(totalCount / parsedLimit);
 
-  // Fetch paginated, sorted results
+  // Fetch paginated, sorted, and filtered results
   const data = await Dataset.find(query)
-    .sort({ createdAt: -1 })
+    .sort(sortObj)
     .skip(skip)
     .limit(parsedLimit);
 

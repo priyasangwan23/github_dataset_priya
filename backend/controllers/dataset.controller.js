@@ -33,13 +33,50 @@ const createDataset = async (req, res, next) => {
   }
 };
 
-// @desc    Get all dataset records (supports optional filtering, search, and pagination)
-// @route   GET /datasets?type=&repo_name=&source_type=&code_element=&search=&page=&limit=
+// @desc    Get all dataset records (supports optional filtering, search, pagination, and sorting)
+// @route   GET /datasets?type=&repo_name=&source_type=&code_element=&search=&page=&limit=&sort=&order=&language=&framework=&category=&task=
 const getAllDatasets = async (req, res, next) => {
   try {
     // 1. Extract query params from the query string
-    const { type, repo_name, source_type, code_element, search, page, limit } = req.query;
-    const options = { type, repo_name, source_type, code_element, search, page, limit };
+    const {
+      type,
+      repo_name,
+      source_type,
+      code_element,
+      search,
+      page,
+      limit,
+      sort,
+      order,
+      language,
+      framework,
+      category,
+      task,
+      "metadata.repo_name": nestedRepoName,
+      "metadata.type": nestedType,
+      "metadata.source_type": nestedSourceType,
+      "metadata.code_element": nestedCodeElement
+    } = req.query;
+
+    const options = {
+      type,
+      repo_name,
+      source_type,
+      code_element,
+      search,
+      page,
+      limit,
+      sort,
+      order,
+      language,
+      framework,
+      category,
+      task,
+      "metadata.repo_name": nestedRepoName,
+      "metadata.type": nestedType,
+      "metadata.source_type": nestedSourceType,
+      "metadata.code_element": nestedCodeElement
+    };
 
     // 2. Call the service layer with the options
     const result = await datasetService.getAllDatasets(options);
