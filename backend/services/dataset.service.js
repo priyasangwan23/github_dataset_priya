@@ -20,33 +20,83 @@ const createDataset = async (datasetData) => {
   return await newDataset.save();
 };
 
-// Service function to get all datasets with optional filtering
-const getAllDatasets = async (filters = {}) => {
-  // Build a dynamic MongoDB query object from the provided filters
-  const query = {};
+// Service function to get all datasets with optional filtering, search, and pagination
+const getAllDatasets = async (options = {}) => {
+  const { type, repo_name, source_type, code_element, search, page, limit } = options;
+
+  // Build a dynamic MongoDB query object
+  const query = { isDeleted: { $ne: true } };
 
   // Filter by metadata.type
-  if (filters.type) {
-    query["metadata.type"] = filters.type;
+  if (type) {
+    query["metadata.type"] = type;
   }
 
   // Filter by metadata.repo_name
-  if (filters.repo_name) {
-    query["metadata.repo_name"] = filters.repo_name;
+  if (repo_name) {
+    query["metadata.repo_name"] = repo_name;
   }
 
   // Filter by metadata.source_type
-  if (filters.source_type) {
-    query["metadata.source_type"] = filters.source_type;
+  if (source_type) {
+    query["metadata.source_type"] = source_type;
   }
 
   // Filter by metadata.code_element
-  if (filters.code_element) {
-    query["metadata.code_element"] = filters.code_element;
+  if (code_element) {
+    query["metadata.code_element"] = code_element;
   }
 
-  // Always exclude soft-deleted documents and sort newest first
-  return await Dataset.find({ ...query, isDeleted: { $ne: true } }).sort({ createdAt: -1 });
+  // Search logic
+  if (search) {
+    const searchRegex = { $regex: search, $options: "i" };
+    query.$or = [
+      { instruction: searchRegex },
+      { input: searchRegex },
+      { output: searchRegex },
+      { "metadata.repo_name": searchRegex }
+    ];
+  }
+
+  // Parse and validate pagination parameters
+  let parsedPage = 1;
+  if (page !== undefined && page !== "") {
+    parsedPage = Number(page);
+    if (!Number.isInteger(parsedPage) || parsedPage <= 0) {
+      const error = new Error("Invalid page parameter. Must be a positive integer.");
+      error.statusCode = 400; // 400 Bad Request
+      throw error;
+    }
+  }
+
+  let parsedLimit = 10;
+  if (limit !== undefined && limit !== "") {
+    parsedLimit = Number(limit);
+    if (!Number.isInteger(parsedLimit) || parsedLimit <= 0) {
+      const error = new Error("Invalid limit parameter. Must be a positive integer.");
+      error.statusCode = 400; // 400 Bad Request
+      throw error;
+    }
+  }
+
+  const skip = (parsedPage - 1) * parsedLimit;
+
+  // Get total count matching the query for totalPages calculation
+  const totalCount = await Dataset.countDocuments(query);
+  const totalPages = Math.ceil(totalCount / parsedLimit);
+
+  // Fetch paginated, sorted results
+  const data = await Dataset.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parsedLimit);
+
+  return {
+    data,
+    count: totalCount,
+    page: parsedPage,
+    totalPages
+  };
 };
 
 // Service function to get a single dataset by its MongoDB ObjectId
