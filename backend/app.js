@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const { errorHandler, notFound } = require("./middlewares/error.middleware");
 const logger = require("./middlewares/logger.middleware");
-const repositoryRoutes = require("./routes/repository.routes");
+const rateLimiter = require("./middlewares/rateLimiter.middleware");
 const datasetRoutes = require("./routes/dataset.routes");
 const authRoutes = require("./routes/auth.routes");
 const protectedRoutes = require("./routes/protected.routes");
@@ -11,30 +12,27 @@ const analyticsRoutes = require("./routes/analytics.routes");
 
 const app = express();
 
-// ─── Core Middlewares ───────────────────────────────────────────────────────
+// Core middlewares
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger);
+app.use(rateLimiter); // Global rate limiting
 
-// ─── Health Check ───────────────────────────────────────────────────────────
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "🚀 GitHub Dataset API is running",
-    version: "1.0.0",
-  });
+// Health check route
+app.get("/health", (req, res) => {
+  res.status(200).json({ success: true, message: "OK" });
 });
 
-// ─── API Routes ─────────────────────────────────────────────────────────────
-app.use("/api/repositories", repositoryRoutes);
+// API routes
 app.use("/datasets", datasetRoutes);
 app.use("/auth", authRoutes);
 app.use("/protected", protectedRoutes);
 app.use("/stats", statsRoutes);
 app.use("/analytics", analyticsRoutes);
 
-// ─── Error Handling ─────────────────────────────────────────────────────────
+// 404 & error handling
 app.use(notFound);
 app.use(errorHandler);
 
