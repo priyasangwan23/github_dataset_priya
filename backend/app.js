@@ -4,6 +4,8 @@ const { errorHandler, notFound } = require("./middlewares/error.middleware");
 const logger = require("./middlewares/logger.middleware");
 const repositoryRoutes = require("./routes/repository.routes");
 const datasetRoutes = require("./routes/dataset.routes");
+const authRoutes = require("./routes/auth.routes");
+const protectedRoutes = require("./routes/protected.routes");
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.get("/", (req, res) => {
 // ─── API Routes ─────────────────────────────────────────────────────────────
 app.use("/api/repositories", repositoryRoutes);
 app.use("/datasets", datasetRoutes);
+app.use("/auth", authRoutes);
+app.use("/protected", protectedRoutes);
 
 // ─── Error Handling ─────────────────────────────────────────────────────────
 app.use(notFound);
