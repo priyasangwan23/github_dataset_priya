@@ -20,9 +20,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 app.use(rateLimiter); // Global rate limiting
 
-// Health check route
+// Root route – Render pings GET / and HEAD / by default
+app.get("/", (req, res) => {
+  res.status(200).json({ success: true, message: "GitHub Dataset API is running." });
+});
+app.head("/", (req, res) => {
+  res.status(200).end();
+});
+
+// Health check route (set this as Health Check Path in Render)
 app.get("/health", (req, res) => {
   res.status(200).json({ success: true, message: "OK" });
+});
+app.head("/health", (req, res) => {
+  res.status(200).end();
 });
 
 // API routes
