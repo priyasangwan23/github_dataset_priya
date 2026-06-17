@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -53,7 +53,10 @@ function App() {
                 element={
                   <div className="error-wrapper" id="not-found-container">
                     <div className="dataset-card error-card glass-panel" style={{ borderColor: "var(--border-color)" }}>
-                      <span className="error-icon" style={{ color: "var(--accent-tertiary)" }}>🧭</span>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem", color: "var(--accent-tertiary)" }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                      </svg>
                       <h3 className="error-title">Page Not Found</h3>
                       <p className="error-msg">The URL you requested does not exist in our catalog mapping.</p>
                       <a href="/dashboard" className="btn-primary" style={{ textDecoration: "none" }}>

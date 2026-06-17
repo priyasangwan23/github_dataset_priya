@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import useDatasets from "../hooks/useDatasets";
 import useStats from "../hooks/useStats";
@@ -6,6 +6,54 @@ import DatasetCard from "../components/DatasetCard";
 import StatCard from "../components/StatCard";
 import TypeDistributionChart from "../components/TypeDistributionChart";
 import Spinner from "../components/Spinner";
+
+// Icon helpers replacing emojis
+const DatabaseIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+    <ellipse cx="12" cy="5" rx="9" ry="3" />
+    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+  </svg>
+);
+
+const TagIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+    <line x1="7" y1="7" x2="7.01" y2="7" />
+  </svg>
+);
+
+const AnalyticsIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+    <line x1="18" y1="20" x2="18" y2="10" />
+    <line x1="12" y1="20" x2="12" y2="4" />
+    <line x1="6" y1="20" x2="6" y2="14" />
+  </svg>
+);
+
+const SparkleIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+    <line x1="12" y1="2" x2="12" y2="22" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <line x1="19.07" y1="4.93" x2="4.93" y2="19.07" />
+    <line x1="19.07" y1="19.07" x2="4.93" y2="4.93" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem", opacity: 0.8 }}>
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+const WarningIcon = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "1rem", color: "var(--accent-tertiary)" }}>
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+    <line x1="12" y1="9" x2="12" y2="13" />
+    <line x1="12" y1="17" x2="12.01" y2="17" />
+  </svg>
+);
 
 export const DashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -132,10 +180,10 @@ export const DashboardPage = () => {
 
       {/* Stats Row */}
       <section className="stats-grid" id="stats-grid" aria-label="Catalog statistics">
-        <StatCard label="Total Datasets" value={count !== null ? count.toLocaleString() : null} icon="🗄️" accent="violet" loading={statsLoading} />
-        <StatCard label="Top Type" value={topTypes[0]?.[0] ?? "—"} icon="🏷️" accent="cyan" loading={statsLoading} />
-        <StatCard label="Top Type Count" value={topTypes[0]?.[1] ? topTypes[0][1].toLocaleString() : null} icon="📊" accent="rose" loading={statsLoading} />
-        <StatCard label="Unique Types" value={!statsLoading ? Object.keys(typeDistribution).length : null} icon="✳️" accent="green" loading={statsLoading} />
+        <StatCard label="Total Datasets" value={count !== null ? count.toLocaleString() : null} icon={<DatabaseIcon />} accent="violet" loading={statsLoading} />
+        <StatCard label="Top Type" value={topTypes[0]?.[0] ?? "—"} icon={<TagIcon />} accent="cyan" loading={statsLoading} />
+        <StatCard label="Top Type Count" value={topTypes[0]?.[1] ? topTypes[0][1].toLocaleString() : null} icon={<AnalyticsIcon />} accent="rose" loading={statsLoading} />
+        <StatCard label="Unique Types" value={!statsLoading ? Object.keys(typeDistribution).length : null} icon={<SparkleIcon />} accent="green" loading={statsLoading} />
       </section>
 
       {/* Analytics Chart */}
@@ -189,7 +237,7 @@ export const DashboardPage = () => {
       ) : error ? (
         <div className="error-wrapper" id="error-state-container">
           <div className="dataset-card error-card glass-panel">
-            <span className="error-icon">⚠️</span>
+            <WarningIcon />
             <h3 className="error-title">Connection Failed</h3>
             <p className="error-msg">{error}</p>
             <button className="btn-primary" onClick={handleReset}>Retry Connection</button>
@@ -198,7 +246,7 @@ export const DashboardPage = () => {
       ) : datasets.length === 0 ? (
         <div className="empty-wrapper" id="empty-state-container">
           <div className="dataset-card error-card glass-panel" style={{ borderColor:"var(--border-color)" }}>
-            <span className="error-icon" style={{ color:"var(--text-muted)" }}>🔍</span>
+            <SearchIcon />
             <h3 className="error-title">No Results Found</h3>
             <p className="error-msg">No datasets matched your search or filter criteria.</p>
             <button className="btn-primary" onClick={handleReset}>Clear All Filters</button>

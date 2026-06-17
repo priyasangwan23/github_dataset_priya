@@ -16,7 +16,9 @@ export const Navbar = () => {
     <nav className="navbar" id="app-navbar">
       <Link to="/" style={{ textDecoration: 'none' }}>
         <div className="nav-brand">
-          <span className="nav-brand-icon">⚡</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="nav-brand-icon" style={{ fill: 'currentColor' }}>
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
           <span>GitDataset Hub</span>
         </div>
       </Link>
@@ -42,7 +44,10 @@ export const Navbar = () => {
             
             {/* User Profile Badge */}
             <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', fontSize: '0.85rem', color: 'var(--text-primary)' }} id="navbar-user-badge">
-              <span style={{ fontSize: '1rem' }}>👤</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
               <span style={{ fontWeight: 600 }}>{user?.name || 'User'}</span>
             </div>
 
