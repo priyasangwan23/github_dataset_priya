@@ -14,6 +14,9 @@ export const useDatasets = (initialParams = {}) => {
     page: 1,
     limit: 9,
     search: '',
+    type: '',
+    language: '',
+    category: '',
     ...initialParams,
   });
   const [pagination, setPagination] = useState({

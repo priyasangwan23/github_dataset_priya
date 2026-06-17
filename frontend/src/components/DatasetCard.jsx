@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const DatasetCard = ({ dataset }) => {
-  const { id, instruction, input, output, metadata = {} } = dataset;
+  const { id, instruction, input, output, language, category, metadata = {} } = dataset;
   const [copiedSection, setCopiedSection] = useState(null);
 
   const handleCopy = (text, sectionName) => {
@@ -33,6 +33,16 @@ export const DatasetCard = ({ dataset }) => {
           {metadata.source_type && (
             <span className={`badge ${getSourceTypeBadgeClass(metadata.source_type)}`} id={`badge-source-${id}`}>
               {metadata.source_type}
+            </span>
+          )}
+          {language && (
+            <span className="badge badge-rose" id={`badge-lang-${id}`}>
+              {language}
+            </span>
+          )}
+          {category && (
+            <span className="badge badge-cyan" id={`badge-cat-${id}`}>
+              {category}
             </span>
           )}
         </div>
@@ -85,7 +95,7 @@ export const DatasetCard = ({ dataset }) => {
       </div>
 
       {/* Metadata Footnote details */}
-      {(metadata.repo_name || metadata.code_element || metadata.file_path) && (
+      {(metadata.repo_name || metadata.code_element || metadata.file_path || language || category) && (
         <div className="card-metadata-details">
           {metadata.repo_name && (
             <div className="meta-item">
@@ -97,6 +107,18 @@ export const DatasetCard = ({ dataset }) => {
             <div className="meta-item">
               <span className="meta-label">Code Element</span>
               <span className="meta-val" title={metadata.code_element}>{metadata.code_element}</span>
+            </div>
+          )}
+          {language && (
+            <div className="meta-item">
+              <span className="meta-label">Language</span>
+              <span className="meta-val" title={language}>{language}</span>
+            </div>
+          )}
+          {category && (
+            <div className="meta-item">
+              <span className="meta-label">Category</span>
+              <span className="meta-val" title={category}>{category}</span>
             </div>
           )}
           {metadata.file_path && (
