@@ -9,6 +9,38 @@ const api = axios.create({
   },
 });
 
+// Request interceptor to automatically attach JWT token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Register a new user.
+ * POST /auth/register
+ */
+export const registerUser = async (name, email, password) => {
+  const response = await api.post('/auth/register', { name, email, password });
+  return response.data;
+};
+
+/**
+ * Log in an existing user.
+ * POST /auth/login
+ */
+export const loginUser = async (email, password) => {
+  const response = await api.post('/auth/login', { email, password });
+  return response.data;
+};
+
 /**
  * Fetch datasets with optional query parameters.
  * Supports: page, limit, search, type, repo_name, source_type, code_element, language, etc.
