@@ -25,9 +25,17 @@ export const Navbar = () => {
         {token ? (
           <>
             <Link 
-              to="/" 
-              className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-              id="nav-link-home"
+              to="/dashboard" 
+              className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
+              id="nav-link-dashboard"
+            >
+              Dashboard
+            </Link>
+
+            <Link 
+              to="/datasets" 
+              className={`nav-link ${location.pathname === '/datasets' ? 'active' : ''}`}
+              id="nav-link-datasets"
             >
               Datasets
             </Link>

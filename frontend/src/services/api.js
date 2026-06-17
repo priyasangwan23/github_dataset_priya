@@ -43,16 +43,26 @@ export const loginUser = async (email, password) => {
 
 /**
  * Fetch datasets with optional query parameters.
- * Supports: page, limit, search, type, repo_name, source_type, code_element, language, etc.
  */
 export const getDatasets = async (params = {}) => {
-  try {
-    const response = await api.get('/datasets', { params });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching datasets:', error);
-    throw error;
-  }
+  const response = await api.get('/datasets', { params });
+  return response.data;
+};
+
+/**
+ * GET /stats/datasets/count — total dataset count
+ */
+export const getDatasetCount = async () => {
+  const response = await api.get('/stats/datasets/count');
+  return response.data;
+};
+
+/**
+ * GET /analytics/datasets/type-analysis — type distribution object
+ */
+export const getTypeAnalysis = async () => {
+  const response = await api.get('/analytics/datasets/type-analysis');
+  return response.data;
 };
 
 export default api;
