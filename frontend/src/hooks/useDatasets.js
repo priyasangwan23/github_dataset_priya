@@ -12,11 +12,13 @@ export const useDatasets = (initialParams = {}) => {
   const [error, setError] = useState(null);
   const [params, setParams] = useState({
     page: 1,
-    limit: 9,
+    limit: 10,
     search: '',
     type: '',
     language: '',
     category: '',
+    sort: '',
+    order: '',
     ...initialParams,
   });
   const [pagination, setPagination] = useState({

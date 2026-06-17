@@ -7,12 +7,15 @@ import Spinner from '../components/Spinner';
 export const DatasetPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Extract filters from URL query parameters (single source of truth)
+  // Extract filters, sorting, and pagination parameters from URL (single source of truth)
   const search = searchParams.get('search') || '';
   const type = searchParams.get('type') || '';
   const language = searchParams.get('language') || '';
   const category = searchParams.get('category') || '';
   const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const sort = searchParams.get('sort') || '';
+  const order = searchParams.get('order') || '';
 
   // Fetch datasets matching the URL state
   const {
@@ -22,12 +25,14 @@ export const DatasetPage = () => {
     pagination,
     updateParams,
   } = useDatasets({
-    limit: 6,
+    limit,
     search,
     type,
     language,
     category,
     page,
+    sort,
+    order,
   });
 
   // Local state for immediate responsiveness in search input text box
@@ -41,8 +46,11 @@ export const DatasetPage = () => {
       language,
       category,
       page,
+      limit,
+      sort,
+      order,
     });
-  }, [search, type, language, category, page, updateParams]);
+  }, [search, type, language, category, page, limit, sort, order, updateParams]);
 
   // Sync search input box when URL search param updates externally
   useEffect(() => {
@@ -78,6 +86,31 @@ export const DatasetPage = () => {
     setSearchParams(nextParams);
   };
 
+  const handleSortChange = (value) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (value) {
+      const [sortField, sortOrder] = value.split('-');
+      nextParams.set('sort', sortField);
+      nextParams.set('order', sortOrder);
+    } else {
+      nextParams.delete('sort');
+      nextParams.delete('order');
+    }
+    nextParams.set('page', '1'); // Reset page to 1 on sorting change
+    setSearchParams(nextParams);
+  };
+
+  const handleLimitChange = (value) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (value && value !== '10') {
+      nextParams.set('limit', value);
+    } else {
+      nextParams.delete('limit'); // Default is 10, remove from URL to keep it clean
+    }
+    nextParams.set('page', '1'); // Reset page to 1 on limit change
+    setSearchParams(nextParams);
+  };
+
   const handleResetFilters = () => {
     setSearchInput('');
     setSearchParams({}); // Clear all parameters from URL
@@ -92,7 +125,7 @@ export const DatasetPage = () => {
     }
   };
 
-  // Dropdown list options
+  // Dropdown options
   const typeOptions = [
     { value: '', label: 'All Types' },
     { value: 'function', label: 'Function' },
@@ -121,6 +154,22 @@ export const DatasetPage = () => {
     { value: 'Configuration', label: 'Configuration' },
     { value: 'Documentation', label: 'Documentation' },
   ];
+
+  const sortOptions = [
+    { value: '', label: 'Sort: Default (Newest)' },
+    { value: 'instruction-asc', label: 'Instruction (A to Z)' },
+    { value: 'instruction-desc', label: 'Instruction (Z to A)' },
+    { value: 'createdAt-asc', label: 'Date Added (Oldest)' },
+  ];
+
+  const limitOptions = [
+    { value: '5', label: '5 per page' },
+    { value: '10', label: '10 per page' },
+    { value: '20', label: '20 per page' },
+    { value: '50', label: '50 per page' },
+  ];
+
+  const currentSortValue = sort && order ? `${sort}-${order}` : '';
 
   return (
     <div className="main-content" id="dataset-page-container">
@@ -166,6 +215,7 @@ export const DatasetPage = () => {
             value={type}
             onChange={(e) => handleFilterChange('type', e.target.value)}
             id="filter-type-select"
+            title="Dataset Type"
           >
             {typeOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -180,6 +230,7 @@ export const DatasetPage = () => {
             value={language}
             onChange={(e) => handleFilterChange('language', e.target.value)}
             id="filter-language-select"
+            title="Programming Language"
           >
             {languageOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -194,8 +245,39 @@ export const DatasetPage = () => {
             value={category}
             onChange={(e) => handleFilterChange('category', e.target.value)}
             id="filter-category-select"
+            title="Content Category"
           >
             {categoryOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Sorting Dropdown */}
+          <select
+            className="filter-select"
+            value={currentSortValue}
+            onChange={(e) => handleSortChange(e.target.value)}
+            id="filter-sort-select"
+            title="Sort Results"
+          >
+            {sortOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+
+          {/* Page Limit Selector */}
+          <select
+            className="filter-select"
+            value={limit.toString()}
+            onChange={(e) => handleLimitChange(e.target.value)}
+            id="filter-limit-select"
+            title="Items Per Page"
+          >
+            {limitOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -219,7 +301,7 @@ export const DatasetPage = () => {
           <Spinner message="Retrieving catalog records..." />
           <div className="datasets-grid">
             {/* Show skeleton cards during initial loading for premium vibe */}
-            {[...Array(6)].map((_, idx) => (
+            {[...Array(limit)].map((_, idx) => (
               <div className="skeleton-card" key={idx}>
                 <div className="skeleton-item" style={{ height: '20px', width: '30%', marginBottom: '1rem' }}></div>
                 <div className="skeleton-item" style={{ height: '30px', width: '80%', marginBottom: '1.5rem' }}></div>
