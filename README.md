@@ -1,345 +1,251 @@
-# AI Dataset Backend API
+# 🚀 Dataset Management Full Stack System
 
-A production-ready backend API built using **Node.js**, **Express.js**, and **MongoDB** for managing AI/code datasets.
-
-This project provides:
-
-- RESTful APIs
-- CRUD Operations
-- Authentication using JWT
-- Filtering, Searching, Pagination & Sorting
-- Aggregation & Analytics APIs
-- Middleware-based architecture
-- Scalable MVC folder structure
+A **scalable full-stack web application** for managing and querying large datasets with advanced filtering, search, authentication, and analytics capabilities.
 
 ---
 
-# 🚀 Tech Stack
+## 📌 Project Overview
 
-| Technology | Usage |
-|---|---|
-| Node.js | Backend Runtime |
-| Express.js | Web Framework |
-| MongoDB | Database |
-| Mongoose | ODM |
-| JWT | Authentication |
-| bcrypt | Password Hashing |
-| dotenv | Environment Variables |
-| cors | Cross-Origin Requests |
+This project is a **full-stack dataset management system** that allows users to efficiently:
+
+* Store large datasets
+* Perform advanced queries
+* Analyze data using aggregation
+* Interact through a clean frontend UI
+
+The system is designed using **industry-standard architecture** and focuses on scalability and performance.
 
 ---
 
-# 📁 Project Structure
+## 🛠️ Tech Stack
+
+### 🔹 Frontend
+
+* React.js (Vite)
+* Axios
+* React Router
+* CSS / Tailwind
+
+### 🔹 Backend
+
+* Node.js
+* Express.js
+* MongoDB (Mongoose)
+* JWT Authentication
+
+### 🔹 Tools
+
+* Postman (API Testing)
+* Git & GitHub
+
+---
+
+## 🧠 Key Features
+
+### 🔐 Authentication
+
+* User Registration & Login
+* JWT-based authentication
+* Protected routes
+
+---
+
+### 📊 Dataset Management (CRUD)
+
+* Create dataset
+* Fetch all datasets
+* Fetch single dataset
+* Update dataset
+* Delete dataset
+
+---
+
+### 🔍 Advanced Querying
+
+* Keyword-based search
+* Dynamic filtering (type, repo, language, category, etc.)
+* Pagination (page & limit)
+* Sorting (ascending / descending)
+
+---
+
+### 📈 Analytics & Stats
+
+* Total dataset count
+* Type-based dataset distribution
+* MongoDB aggregation pipelines
+
+---
+
+### ⚙️ Backend Features
+
+* MVC Architecture
+* Middleware (Logger, Error Handler, Auth)
+* Validation system
+* Rate limiting
+* Clean API structure
+
+---
+
+### 🎨 Frontend Features
+
+* Dataset listing UI
+* Search and filter interface
+* Pagination and sorting
+* Authentication pages (Login/Register)
+* Dashboard with analytics
+
+---
+
+## 📡 API Endpoints Overview
+
+| Method | Endpoint                            | Description                 |
+| ------ | ----------------------------------- | --------------------------- |
+| GET    | `/datasets`                         | Fetch datasets with filters |
+| GET    | `/datasets/:id`                     | Fetch dataset by ID         |
+| POST   | `/datasets`                         | Create dataset              |
+| PATCH  | `/datasets/:id`                     | Update dataset              |
+| DELETE | `/datasets/:id`                     | Delete dataset              |
+| GET    | `/search/datasets?q=`               | Search datasets             |
+| GET    | `/stats/datasets/count`             | Get dataset count           |
+| GET    | `/analytics/datasets/type-analysis` | Dataset analytics           |
+| POST   | `/auth/register`                    | Register user               |
+| POST   | `/auth/login`                       | Login user                  |
+
+---
+
+## 🔗 Important Links
+
+| Resource               | Link                                             |
+| ---------------------- | ------------------------------------------------ |
+| 🌐 Frontend Deployed Link | `https://github-dataset-priya-3g6f.vercel.app/dashboard` |
+| ⚙️ Backend Deployed Link  | `https://github-dataset-priya-1.onrender.com/`  |
+| 📬 Postman Documentation | `https://documenter.getpostman.com/view/50840757/2sBXwtqpMZ`             |
+
+---
+
+## ⚡ Getting Started
+
+### 🔹 Backend Setup
 
 ```bash
-project-root/
-│
-├── config/
-│   └── db.js
-│
-├── controllers/
-│
-├── services/
-│
-├── models/
-│
-├── routes/
-│
-├── middlewares/
-│
-├── utils/
-│
-├── .env
-├── server.js
-├── package.json
-└── README.md
-```
-
----
-
-# 📌 Features
-
-## ✅ Core Backend Features
-
-- RESTful API architecture
-- MongoDB integration using Mongoose
-- MVC architecture
-- Modular and scalable backend structure
-- Environment variable configuration
-
----
-
-## ✅ CRUD Operations
-
-| Feature | Status |
-|---|---|
-| Create Dataset | ✅ |
-| Fetch All Datasets | ✅ |
-| Fetch Dataset By ID | ✅ |
-| Update Dataset | ✅ |
-| Delete Dataset | ✅ |
-
----
-
-## ✅ Advanced Query Features
-
-- Filtering
-- Searching
-- Pagination
-- Sorting
-- Dynamic query building
-
----
-
-## ✅ Authentication Features
-
-- User Registration
-- User Login
-- JWT Token Generation
-- Protected Routes
-- Password Hashing using bcrypt
-
----
-
-## ✅ Middleware Features
-
-- Authentication Middleware
-- Logger Middleware
-- Error Handling Middleware
-- Rate Limiting Middleware
-
----
-
-## ✅ Analytics & Aggregation
-
-- Dataset Statistics
-- Type Analysis
-- Repository Analysis
-- Aggregation Pipelines
-
----
-
-# 🗄️ Dataset Structure
-
-```json
-{
-  "id": "string",
-  "instruction": "string",
-  "input": "string",
-  "output": "string",
-  "metadata": {
-    "type": "string",
-    "code_element": "string",
-    "repo_name": "string",
-    "file_path": "string",
-    "source_type": "string"
-  }
-}
-```
-
----
-
-# ⚙️ Installation & Setup
-
-## 1️⃣ Clone Repository
-
-```bash
-git clone <your-repository-url>
-```
-
----
-
-## 2️⃣ Navigate to Project Directory
-
-```bash
-cd project-name
-```
-
----
-
-## 3️⃣ Install Dependencies
-
-```bash
+git clone <backend-repo>
+cd backend
 npm install
 ```
 
----
-
-## 4️⃣ Configure Environment Variables
-
-Create a `.env` file in the root directory:
+Create `.env` file:
 
 ```env
-PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_secret
 ```
 
----
-
-## 5️⃣ Start Development Server
-
-### Development Mode
+Run backend server:
 
 ```bash
 npm run dev
 ```
 
-### Production Mode
+---
+
+### 🔹 Dataset Seeding
 
 ```bash
-npm start
+npm run seed
+```
+
+> ⚠️ Note: Add your dataset JSON file manually inside the `/data` folder before running the seed command.
+
+---
+
+### 🔹 Frontend Setup
+
+```bash
+git clone <frontend-repo>
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
 
-# 🔗 API Endpoints
+## 🧪 API Testing
 
-# 📂 Dataset Routes
+All APIs were tested using **Postman**, including:
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/datasets` | Fetch all datasets |
-| GET | `/datasets/:id` | Fetch dataset by ID |
-| POST | `/datasets` | Create new dataset |
-| PATCH | `/datasets/:id` | Update dataset |
-| DELETE | `/datasets/:id` | Delete dataset |
+* CRUD operations
+* Authentication
+* Filtering & search
+* Pagination & sorting
+* Analytics APIs
 
 ---
 
-# 🔍 Query Features
+## 🧠 Design Approach
 
-## Filtering
+Instead of creating multiple redundant endpoints, this project uses a:
 
-```bash
-/datasets?type=function
+👉 **Dynamic Query-Based API Design**
+
+Example:
+
+```
+/datasets?type=function&language=python&page=1&limit=10
+```
+
+### Benefits:
+
+* Scalable
+* Clean code
+* Avoids duplication
+* Industry-standard approach
+
+---
+
+## 📦 Backend Folder Structure
+
+```
+backend/
+ ├── controllers/
+ ├── models/
+ ├── routes/
+ ├── services/
+ ├── middlewares/
+ ├── config/
+ ├── data/
+ ├── seed.js
+ ├── server.js
 ```
 
 ---
 
-## Search
+## 🚀 Future Improvements
 
-```bash
-/datasets?search=python
-```
-
----
-
-## Pagination
-
-```bash
-/datasets?page=1&limit=10
-```
+* Redis caching for performance
+* Role-based access control
+* Advanced analytics dashboard
+* Deployment (AWS / Render)
 
 ---
 
-## Sorting
+## 🎤 Conclusion
 
-```bash
-/datasets?sort=repo_name
-```
+This project demonstrates:
 
----
-
-# 🔐 Authentication Routes
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/auth/register` | Register User |
-| POST | `/auth/login` | Login User |
+* Scalable backend architecture
+* Advanced API design
+* Full-stack integration
+* Real-world development practices
 
 ---
 
-# 📊 Analytics Routes
+## 👤 Author
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/analytics/datasets/type-analysis` | Analyze datasets by type |
-| GET | `/analytics/datasets/repo-analysis` | Analyze repositories |
+**Priya Sangwan**
 
 ---
 
-# 📈 Statistics Routes
+## ⭐ Support
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/stats/datasets/count` | Total dataset count |
-| GET | `/stats/datasets/repos` | Total repositories count |
-
----
-
-# 🛡️ Security Features
-
-- JWT Authentication
-- Password Hashing
-- Protected Routes
-- Input Validation
-- Global Error Handling
-- Rate Limiting
-
----
-
-# ⚡ Middleware Used
-
-| Middleware | Purpose |
-|---|---|
-| Authentication Middleware | Protect private routes |
-| Logger Middleware | Log incoming requests |
-| Error Handling Middleware | Handle application errors |
-| Rate Limiting Middleware | Prevent API abuse |
-
----
-
-# 📦 MongoDB Features Used
-
-- Schema Validation
-- Indexing
-- Aggregation Pipeline
-- Dynamic Querying
-- Pagination
-- Projection
-- Sorting
-
----
-
-# 🧪 API Testing
-
-API testing was performed using:
-
-- Postman
-
-Postman collection is included in the project.
-
----
-
-# 🧠 Learning Outcomes
-
-This project demonstrates understanding of:
-
-- REST API Development
-- MongoDB & Mongoose
-- MVC Architecture
-- Authentication & Authorization
-- Middleware System
-- Aggregation Framework
-- Backend Scalability Concepts
-- Error Handling
-- API Optimization
-
----
-
-# 🚀 Future Improvements
-
-- Swagger Documentation
-- Redis Caching
-- Docker Deployment
-- Unit Testing
-- CI/CD Integration
-
----
-
-# 👨‍💻 Author
-
-Developed as part of the **Full Stack Backend Project Assignment – 2026**
-
----
+If you like this project, give it a ⭐ on GitHub!
