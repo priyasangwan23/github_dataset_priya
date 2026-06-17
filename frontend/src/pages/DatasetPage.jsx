@@ -1,57 +1,98 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import useDatasets from '../hooks/useDatasets';
 import DatasetCard from '../components/DatasetCard';
 import Spinner from '../components/Spinner';
 
 export const DatasetPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Extract filters from URL query parameters (single source of truth)
+  const search = searchParams.get('search') || '';
+  const type = searchParams.get('type') || '';
+  const language = searchParams.get('language') || '';
+  const category = searchParams.get('category') || '';
+  const page = parseInt(searchParams.get('page') || '1', 10);
+
+  // Fetch datasets matching the URL state
   const {
     datasets,
     loading,
     error,
-    params,
     pagination,
     updateParams,
-  } = useDatasets({ limit: 6 });
+  } = useDatasets({
+    limit: 6,
+    search,
+    type,
+    language,
+    category,
+    page,
+  });
 
-  const [searchInput, setSearchInput] = useState(params.search);
+  // Local state for immediate responsiveness in search input text box
+  const [searchInput, setSearchInput] = useState(search);
 
-  // Debounce search input changes
+  // Sync state whenever URL query params change (e.g. back/forward navigation or resets)
+  useEffect(() => {
+    updateParams({
+      search,
+      type,
+      language,
+      category,
+      page,
+    });
+  }, [search, type, language, category, page, updateParams]);
+
+  // Sync search input box when URL search param updates externally
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
+
+  // Debounce user typing to prevent excessive API requests
   useEffect(() => {
     const handler = setTimeout(() => {
-      updateParams({ search: searchInput, page: 1 });
-    }, 450);
+      if (searchInput !== search) {
+        const nextParams = new URLSearchParams(searchParams);
+        if (searchInput.trim()) {
+          nextParams.set('search', searchInput);
+        } else {
+          nextParams.delete('search');
+        }
+        nextParams.set('page', '1'); // Reset to first page on new search
+        setSearchParams(nextParams);
+      }
+    }, 400);
 
     return () => clearTimeout(handler);
-  }, [searchInput, updateParams]);
-
-  // Sync search input if reset or modified externally
-  useEffect(() => {
-    setSearchInput(params.search);
-  }, [params.search]);
+  }, [searchInput, search, searchParams, setSearchParams]);
 
   const handleFilterChange = (key, value) => {
-    updateParams({ [key]: value, page: 1 });
+    const nextParams = new URLSearchParams(searchParams);
+    if (value) {
+      nextParams.set(key, value);
+    } else {
+      nextParams.delete(key);
+    }
+    nextParams.set('page', '1'); // Reset page to 1 on filter change
+    setSearchParams(nextParams);
   };
 
   const handleResetFilters = () => {
     setSearchInput('');
-    updateParams({
-      search: '',
-      type: '',
-      repo_name: '',
-      source_type: '',
-      page: 1,
-    });
+    setSearchParams({}); // Clear all parameters from URL
   };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
-      updateParams({ page: newPage });
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.set('page', newPage.toString());
+      setSearchParams(nextParams);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  // Pre-populated common options for dropdowns based on typical backend entries
+  // Dropdown list options
   const typeOptions = [
     { value: '', label: 'All Types' },
     { value: 'function', label: 'Function' },
@@ -61,18 +102,24 @@ export const DatasetPage = () => {
     { value: 'documentation', label: 'Documentation' },
   ];
 
-  const repoOptions = [
-    { value: '', label: 'All Repositories' },
-    { value: 'ultralytics/yolov5', label: 'ultralytics/yolov5' },
-    { value: 'EleutherAI/lm-evaluation-harness', label: 'EleutherAI/lm-evaluation-harness' },
-    { value: 'huggingface/transformers', label: 'huggingface/transformers' },
-    { value: 'deepfakes/faceswap', label: 'deepfakes/faceswap' },
-    { value: 'mlflow/mlflow', label: 'mlflow/mlflow' },
+  const languageOptions = [
+    { value: '', label: 'All Languages' },
+    { value: 'Python', label: 'Python' },
+    { value: 'JavaScript', label: 'JavaScript' },
+    { value: 'TypeScript', label: 'TypeScript' },
+    { value: 'C++', label: 'C++' },
+    { value: 'Go', label: 'Go' },
+    { value: 'Shell', label: 'Shell' },
   ];
 
-  const sourceTypeOptions = [
-    { value: '', label: 'All Sources' },
-    { value: 'github_repository', label: 'GitHub Repository' },
+  const categoryOptions = [
+    { value: '', label: 'All Categories' },
+    { value: 'Utility', label: 'Utility' },
+    { value: 'Algorithm', label: 'Algorithm' },
+    { value: 'AI Model', label: 'AI Model' },
+    { value: 'API Wrapper', label: 'API Wrapper' },
+    { value: 'Configuration', label: 'Configuration' },
+    { value: 'Documentation', label: 'Documentation' },
   ];
 
   return (
@@ -116,7 +163,7 @@ export const DatasetPage = () => {
           {/* Filter Type */}
           <select
             className="filter-select"
-            value={params.type || ''}
+            value={type}
             onChange={(e) => handleFilterChange('type', e.target.value)}
             id="filter-type-select"
           >
@@ -127,28 +174,28 @@ export const DatasetPage = () => {
             ))}
           </select>
 
-          {/* Filter Repo */}
+          {/* Filter Language */}
           <select
             className="filter-select"
-            value={params.repo_name || ''}
-            onChange={(e) => handleFilterChange('repo_name', e.target.value)}
-            id="filter-repo-select"
+            value={language}
+            onChange={(e) => handleFilterChange('language', e.target.value)}
+            id="filter-language-select"
           >
-            {repoOptions.map((opt) => (
+            {languageOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             ))}
           </select>
 
-          {/* Filter Source Type */}
+          {/* Filter Category */}
           <select
             className="filter-select"
-            value={params.source_type || ''}
-            onChange={(e) => handleFilterChange('source_type', e.target.value)}
-            id="filter-source-select"
+            value={category}
+            onChange={(e) => handleFilterChange('category', e.target.value)}
+            id="filter-category-select"
           >
-            {sourceTypeOptions.map((opt) => (
+            {categoryOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -197,8 +244,8 @@ export const DatasetPage = () => {
         <div className="empty-wrapper" id="empty-state-container">
           <div className="dataset-card error-card glass-panel" style={{ borderColor: 'var(--border-color)' }}>
             <span className="error-icon" style={{ color: 'var(--text-muted)' }}>🔍</span>
-            <h3 className="error-title">No Datasets Found</h3>
-            <p className="error-msg">No records matched your search query or filter options.</p>
+            <h3 className="error-title">No results found</h3>
+            <p className="error-msg">No datasets matched your search query or filter options.</p>
             <button className="btn-primary" onClick={handleResetFilters}>
               Clear Search & Filters
             </button>
